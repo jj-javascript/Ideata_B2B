@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brown-50: #F7F3ED;
+  --brown-100: #EDE6DC;
+  --brown-200: #E0D6C8;
+  --brown-300: #C4B59A;
+  --brown-400: #A89070;
+  --brown-500: #8B7355;
+  --brown-600: #6B5A45;
+  --brown-700: #5D4E37;
+  --brown-800: #3D3325;
+  --brown-900: #2C1810;
+  --brown-950: #1A1008;
+}
+
+body {
+  @apply bg-brown-50 text-brown-900 antialiased;
+}
