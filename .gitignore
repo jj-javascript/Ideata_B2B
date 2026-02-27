@@ -11,6 +11,7 @@ dist
 
 # misc
 .DS_Store
+.cursor/debug.log
 *.pem
 .env*.local
 

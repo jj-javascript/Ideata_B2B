@@ -19,6 +19,8 @@ export default function MeetingPage() {
   const [convexUserId, setConvexUserId] = useState<Id<"users"> | null>(null);
   const [roomName, setRoomName] = useState<string | null>(null);
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const userLeftRef = useRef(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteError, setInviteError] = useState<string | null>(null);
@@ -52,15 +54,26 @@ export default function MeetingPage() {
   }, [isLoaded, user, getOrCreateByClerkId]);
 
   const handleJoin = useCallback(async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f4184da3-d841-4337-b105-2729fa0b958d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meeting/page.tsx:handleJoin',message:'handleJoin called',data:{convexUserId,meetingId},timestamp:Date.now(),hypothesisId:'H4+H5'})}).catch(()=>{});
+    // #endregion
     if (!convexUserId) return;
     setJoinError(null);
+    setVideoError(null);
+    userLeftRef.current = false;
     try {
       const room = await joinMeeting({
         meetingId,
         userId: convexUserId,
       });
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/f4184da3-d841-4337-b105-2729fa0b958d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meeting/page.tsx:handleJoin:success',message:'joinMeeting returned roomName',data:{room},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
+      // #endregion
       setRoomName(room);
     } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/f4184da3-d841-4337-b105-2729fa0b958d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meeting/page.tsx:handleJoin:error',message:'joinMeeting threw',data:{error:err instanceof Error ? err.message : String(err)},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
+      // #endregion
       setJoinError(err instanceof Error ? err.message : "Failed to join");
     }
   }, [meetingId, joinMeeting, convexUserId]);
@@ -130,6 +143,11 @@ export default function MeetingPage() {
       </div>
     );
   }
+
+  // #region agent log
+  const renderBranch = (meeting.platform === "zoom" || meeting.platform === "google_meet") ? "zoom/meet" : !roomName ? "pre-join" : "active-video";
+  fetch('http://127.0.0.1:7242/ingest/f4184da3-d841-4337-b105-2729fa0b958d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meeting/page.tsx:render',message:'Render branch',data:{renderBranch,roomName,platform:meeting.platform,status:meeting.status,meetingId:meeting._id},timestamp:Date.now(),hypothesisId:'H2+H3'})}).catch(()=>{});
+  // #endregion
 
   return (
     <div className="flex h-screen flex-col">
@@ -207,8 +225,8 @@ export default function MeetingPage() {
               <h2 className="text-xl font-semibold text-brown-900 mb-4">
                 Join the brainstorming meeting
               </h2>
-              {joinError && (
-                <p className="mb-4 text-sm text-red-600">{joinError}</p>
+              {(joinError || videoError) && (
+                <p className="mb-4 text-sm text-red-600">{joinError || videoError}</p>
               )}
               <button
                 onClick={handleJoin}
@@ -246,7 +264,14 @@ export default function MeetingPage() {
               roomName={roomName}
               participantName={user.fullName ?? user.firstName ?? "User"}
               participantIdentity={user.id}
-              onLeave={() => setRoomName(null)}
+              onLeave={() => {
+                userLeftRef.current = true;
+                setRoomName(null);
+              }}
+              onConnectionError={(msg) => {
+                setVideoError(msg);
+                setRoomName(null);
+              }}
             />
           </>
         )}

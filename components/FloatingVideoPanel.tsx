@@ -16,6 +16,7 @@ interface FloatingVideoPanelProps {
   participantName: string;
   participantIdentity: string;
   onLeave: () => void;
+  onConnectionError?: (message: string) => void;
 }
 
 function VideoIcon() {
@@ -81,6 +82,7 @@ export function FloatingVideoPanel({
   participantName,
   participantIdentity,
   onLeave,
+  onConnectionError,
 }: FloatingVideoPanelProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
@@ -265,6 +267,7 @@ export function FloatingVideoPanel({
           participantName={participantName}
           participantIdentity={participantIdentity}
           onDisconnected={onLeave}
+          onConnectionError={onConnectionError}
         />
         <div
           className="absolute bottom-0 left-0 h-4 w-4 cursor-nwse-resize border-l-2 border-b-2 border-brown-300"
