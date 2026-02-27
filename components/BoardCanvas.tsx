@@ -3,14 +3,14 @@
 import "@excalidraw/excalidraw/index.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types/types";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 const Excalidraw = dynamic(
   () => import("@excalidraw/excalidraw").then((mod) => mod.Excalidraw),
   { ssr: false }
 );
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
-import type { BinaryFiles } from "@excalidraw/excalidraw/types/types";
+import type { BinaryFiles } from "@excalidraw/excalidraw/types";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
@@ -115,7 +115,7 @@ export function BoardCanvas({ boardId, currentUser, onAddImageRef }: BoardCanvas
           link: null,
           locked: false,
           fileId,
-        } as ExcalidrawElement;
+        } as unknown as ExcalidrawElement;
         excalidrawAPI.updateScene({
           elements: [...elements, imageElement],
         });
@@ -378,7 +378,7 @@ export function BoardCanvas({ boardId, currentUser, onAddImageRef }: BoardCanvas
           // #endregion
           setExcalidrawAPI(api);
         }}
-        initialData={initialData}
+        initialData={initialData as any}
         onChange={handleChange}
         onPointerUpdate={handlePointerUpdate}
         isCollaborating={!!presence?.length}
