@@ -122,10 +122,13 @@ test.describe('Boards', () => {
       await expect(page.getByText('This cannot be undone')).toBeVisible()
 
       // ACT — confirm delete
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await page.getByRole('button', { name: 'Delete', exact: true }).click()
 
-      // ASSERT — board is removed
-      await expect(page.getByText(boardTitle)).not.toBeVisible()
+      // Wait for the modal to close
+      await expect(page.getByRole('heading', { name: 'Delete board' })).not.toBeVisible()
+
+      // ASSERT — board is removed from the list (scope to ul to avoid matching modal text)
+      await expect(page.locator('ul').getByText(boardTitle)).not.toBeVisible()
     }
   })
 

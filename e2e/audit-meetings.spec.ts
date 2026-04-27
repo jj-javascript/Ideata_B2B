@@ -15,7 +15,7 @@ test.describe('Meetings', () => {
 
   test('MEET-01: User can open meeting scheduler', async ({ page }) => {
     // ACT — click schedule meeting button
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
 
     // ASSERT — scheduler form appears
     await expect(page.getByRole('heading', { name: 'Schedule ideation meeting' })).toBeVisible()
@@ -26,7 +26,7 @@ test.describe('Meetings', () => {
 
   test('MEET-02: User can schedule a meeting (LiveKit platform)', async ({ page }) => {
     // ACT — open scheduler
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
 
     // Fill form
     const meetingTitle = `Test Meeting ${Date.now()}`
@@ -43,7 +43,7 @@ test.describe('Meetings', () => {
     await page.getByRole('button', { name: 'Ideata Video' }).click()
 
     // Submit
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     // ASSERT — redirected to meeting page
     await expect(page).toHaveURL(/\/meeting\//)
@@ -51,7 +51,7 @@ test.describe('Meetings', () => {
 
   test('MEET-03: User can schedule a meeting (Zoom with external link)', async ({ page }) => {
     // ACT — open scheduler
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
 
     // Fill form
     await page.getByLabel('Title').fill('Zoom Test Meeting')
@@ -69,7 +69,7 @@ test.describe('Meetings', () => {
     await page.getByLabel('Meeting link').fill('https://zoom.us/j/1234567890')
 
     // Submit
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     // ASSERT — redirected to meeting page
     await expect(page).toHaveURL(/\/meeting\//)
@@ -77,15 +77,15 @@ test.describe('Meetings', () => {
 
   test('MEET-04: Meeting validation errors display correctly', async ({ page }) => {
     // ACT — open scheduler and submit empty
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     // ASSERT — error message for title
     await expect(page.getByText('Title is required')).toBeVisible()
 
     // ACT — fill title but not date
     await page.getByLabel('Title').fill('Validation Test')
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     // ASSERT — error for date/time
     await expect(page.getByText('Date and time are required')).toBeVisible()
@@ -94,7 +94,7 @@ test.describe('Meetings', () => {
     await page.getByLabel('Date').fill(new Date().toISOString().split('T')[0])
     await page.getByLabel('Time').fill('10:00')
     await page.getByRole('button', { name: 'Zoom' }).click()
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     // ASSERT — error for missing link
     await expect(page.getByText('Meeting link is required')).toBeVisible()
@@ -102,7 +102,7 @@ test.describe('Meetings', () => {
 
   test('MEET-05: User can view meeting details page', async ({ page }) => {
     // ARRANGE — create a meeting first
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
     await page.getByLabel('Title').fill('View Test Meeting')
 
     const tomorrow = new Date()
@@ -110,7 +110,7 @@ test.describe('Meetings', () => {
     await page.getByLabel('Date').fill(tomorrow.toISOString().split('T')[0])
     await page.getByLabel('Time').fill('10:00')
     await page.getByRole('button', { name: 'Ideata Video' }).click()
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     // ASSERT — on meeting page
     await expect(page).toHaveURL(/\/meeting\//)
@@ -120,14 +120,14 @@ test.describe('Meetings', () => {
 
   test('MEET-06: User can join meeting with video (LiveKit)', async ({ page }) => {
     // ARRANGE — create a meeting
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
     await page.getByLabel('Title').fill('Join Test Meeting')
 
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     await page.getByLabel('Date').fill(tomorrow.toISOString().split('T')[0])
     await page.getByLabel('Time').fill('11:00')
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     await expect(page).toHaveURL(/\/meeting\//)
 
@@ -144,14 +144,14 @@ test.describe('Meetings', () => {
 
   test('MEET-07: Host can invite participants to a meeting', async ({ page }) => {
     // ARRANGE — create a meeting
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
     await page.getByLabel('Title').fill('Invite Test Meeting')
 
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     await page.getByLabel('Date').fill(tomorrow.toISOString().split('T')[0])
     await page.getByLabel('Time').fill('12:00')
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     await expect(page).toHaveURL(/\/meeting\//)
 
@@ -173,7 +173,7 @@ test.describe('Meetings', () => {
 
   test('MEET-08: Host can remove invite from meeting', async ({ page }) => {
     // ARRANGE — create meeting with invite
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
     await page.getByLabel('Title').fill('Remove Invite Test')
 
     const tomorrow = new Date()
@@ -185,7 +185,7 @@ test.describe('Meetings', () => {
     await page.getByLabel('Invite participants').locator('..').getByPlaceholder('email@example.com').fill('remove@example.com')
     await page.locator('form').getByRole('button', { name: 'Add' }).click()
 
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
     await expect(page).toHaveURL(/\/meeting\//)
 
     // ACT — open invite modal and find remove button

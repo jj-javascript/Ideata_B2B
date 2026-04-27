@@ -56,10 +56,10 @@ test.describe('Accessibility', () => {
 
   test('A11Y-03: Error messages are displayed near form controls', async ({ page }) => {
     // ACT — open meeting scheduler
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
 
     // Submit without filling required fields
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     // ASSERT — error message is visible on the page
     const errorMessage = page.getByText('Title is required')

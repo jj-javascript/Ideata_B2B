@@ -56,14 +56,14 @@ test.describe('Edge Cases', () => {
 
   test('EDGE-03: Invalid email in meeting invite shows validation error', async ({ page }) => {
     // ARRANGE — create a meeting
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.getByRole('button', { name: 'Schedule meeting' }).first().click()
     await page.getByLabel('Title').fill('Email Validation Meeting')
 
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     await page.getByLabel('Date').fill(tomorrow.toISOString().split('T')[0])
     await page.getByLabel('Time').fill('14:00')
-    await page.getByRole('button', { name: 'Schedule meeting' }).click()
+    await page.locator('form').getByRole('button', { name: 'Schedule meeting' }).click()
 
     await expect(page).toHaveURL(/\/meeting\//)
 
@@ -78,15 +78,33 @@ test.describe('Edge Cases', () => {
 
   test('EDGE-04: User sees "No boards yet" when dashboard is empty', async ({ page }) => {
     // ARRANGE — delete all boards if any exist
-    const deleteAllButton = page.getByRole('button', { name: 'Delete all' })
+    // The "Your boards" section shows "Delete all" button when boards exist
+    const deleteAllTrigger = page.getByRole('button', { name: 'Delete all' }).first()
 
-    if (await deleteAllButton.isVisible()) {
-      await deleteAllButton.click()
-      await page.getByRole('button', { name: 'Delete all' }).click()
+    if (await deleteAllTrigger.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await deleteAllTrigger.click()
+      
+      // Wait for confirmation modal to appear
+      const modalHeading = page.getByRole('heading', { name: 'Delete all boards' })
+      await expect(modalHeading).toBeVisible({ timeout: 5000 })
+      
+      // Wait for the confirm button to be ready and click it
+      // The confirm button is a red "Delete all" button inside the modal
+      // Use nth(1) since first is the trigger button, second is the confirm
+      const confirmButton = page.getByRole('button', { name: 'Delete all' }).nth(1)
+      await expect(confirmButton).toBeVisible({ timeout: 2000 })
+      await confirmButton.click()
+      
+      // Wait for modal to close
+      await expect(modalHeading).not.toBeVisible({ timeout: 10000 })
+      
+      // Wait for boards to be removed (data sync)
+      await page.waitForTimeout(1000)
     }
 
     // ASSERT — empty state message
-    await expect(page.getByText('No boards yet')).toBeVisible()
+    // App shows "No boards yet. Create one to get started." when empty
+    await expect(page.getByText(/No boards yet/i)).toBeVisible({ timeout: 10000 })
   })
 
   test('EDGE-05: User sees "No meetings scheduled" when no meetings exist', async ({ page }) => {
@@ -94,17 +112,23 @@ test.describe('Edge Cases', () => {
     // We're checking that the section label exists and handles empty state
 
     // ASSERT — meetings section exists
+    const meetingsSection = page.locator('section').filter({ hasText: 'Upcoming meetings' })
     await expect(page.getByRole('heading', { name: 'Upcoming meetings' })).toBeVisible()
 
-    // If no meetings, empty message should show
+    // Wait for loading to complete (spinner should disappear)
+    const spinner = meetingsSection.locator('[data-testid="spinner"], .animate-spin, [role="status"]')
+    await expect(spinner).toBeHidden({ timeout: 10000 }).catch(() => {})
+
+    // Wait for either meetings list or empty message to appear
     const noMeetingsText = page.getByText('No meetings scheduled')
-    const meetingsList = page.locator('section').filter({ hasText: 'Upcoming meetings' }).locator('ul')
+    const meetingsList = meetingsSection.locator('ul')
 
-    // Either we have meetings list OR we have the "no meetings" message
-    const hasMeetings = await meetingsList.isVisible()
-    const hasEmptyMessage = await noMeetingsText.isVisible()
-
-    expect(hasMeetings || hasEmptyMessage).toBeTruthy()
+    // Use Playwright's built-in polling to wait for either condition
+    await expect(async () => {
+      const hasMeetings = await meetingsList.isVisible()
+      const hasEmptyMessage = await noMeetingsText.isVisible()
+      expect(hasMeetings || hasEmptyMessage).toBeTruthy()
+    }).toPass({ timeout: 10000 })
   })
 
 })

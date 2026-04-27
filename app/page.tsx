@@ -117,7 +117,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-brown-200 bg-brown-100/50 py-10">
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm text-brown-600">© Ideata. Collaborative B2B brainstorming.</span>
+          <span className="text-sm text-brown-600">Ideata. Collaborative B2B brainstorming. © 2026</span>
           <div className="flex gap-6 text-sm text-brown-600">
             <Link href="/privacy" className="hover:text-brown-900 transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-brown-900 transition-colors">Terms</Link>
