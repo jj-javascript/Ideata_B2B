@@ -1,0 +1,12 @@
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H3","location":"global.setup.ts:clerkSetup","message":"clerkSetup finished","data":{"ok":true},"timestamp":1777291245439}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H2","location":"global.setup.ts:authenticate:start","message":"env for setup","data":{"hasEmail":true,"hasSecretKey":true,"hasPublishable":true,"signInStrategy":"email_code"},"timestamp":1777291246027}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:afterGotoRoot","message":"url after /","data":{"url":"http://localhost:9998/"},"timestamp":1777291246863}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:signIn","message":"clerk.signIn done","data":{"url":"http://localhost:9998/"},"timestamp":1777291248812}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:afterGotoDash","message":"url after goto /dashboard","data":{"url":"http://localhost:9998/dashboard"},"timestamp":1777291249094}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:waitForURL","message":"waitForURL ok","data":{"url":"http://localhost:9998/dashboard"},"timestamp":1777291249097}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H3","location":"global.setup.ts:clerkSetup","message":"clerkSetup finished","data":{"ok":true},"timestamp":1777291281626}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H2","location":"global.setup.ts:authenticate:start","message":"env for setup","data":{"hasEmail":true,"hasSecretKey":true,"hasPublishable":true,"signInStrategy":"email_code"},"timestamp":1777291281792}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:afterGotoRoot","message":"url after /","data":{"url":"http://localhost:9998/"},"timestamp":1777291282562}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:signIn","message":"clerk.signIn done","data":{"url":"http://localhost:9998/"},"timestamp":1777291284416}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:afterGotoDash","message":"url after goto /dashboard","data":{"url":"http://localhost:9998/dashboard"},"timestamp":1777291284670}
+{"sessionId":"6b864a","runId":"pre-fix","hypothesisId":"H1","location":"global.setup.ts:waitForURL","message":"waitForURL ok","data":{"url":"http://localhost:9998/dashboard"},"timestamp":1777291284673}
