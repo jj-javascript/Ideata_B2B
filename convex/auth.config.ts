@@ -1,15 +1,10 @@
-import { AuthConfig } from "convex/server";
-
-export default {
+const config = {
   providers: [
     {
-      type: "customJwt",
+      domain: "https://fit-earwig-37.clerk.accounts.dev",
       applicationID: "convex",
-      domain: process.env.NEXT_PUBLIC_CONVEX_SITE_URL,
-      issuer: "https://your.issuer.url.com",
-      jwks: "https://your.issuer.url.com/.well-known/jwks.json",
-      algorithm: "RS256",
     },
   ],
 };
 
+export default config;

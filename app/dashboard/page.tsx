@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [shareEmail, setShareEmail] = useState("");
   const [shareRole, setShareRole] = useState<"viewer" | "editor">("editor");
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  const [showDeleteAllMeetingsConfirm, setShowDeleteAllMeetingsConfirm] = useState(false);
   const newBoardInputRef = useRef<HTMLInputElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
   const getOrCreateByClerkId = useMutation(api.users.getOrCreateByClerkId);
@@ -35,6 +36,7 @@ export default function DashboardPage() {
   const updatePriority = useMutation(api.boards.updatePriority);
   const removeBoard = useMutation(api.boards.remove);
   const removeAllBoards = useMutation(api.boards.removeAllByOwner);
+  const removeAllMeetings = useMutation(api.meetings.removeAllByHost);
   const generateShareLink = useMutation(api.boards.generateShareLink);
   const revokeShareLink = useMutation(api.boards.revokeShareLink);
   const addShare = useMutation(api.boards.addShare);
@@ -151,6 +153,12 @@ export default function DashboardPage() {
     await removeAllBoards({ ownerId: convexUserId });
     setShowDeleteAllConfirm(false);
   }, [convexUserId, removeAllBoards]);
+
+  const handleDeleteAllMeetingsConfirm = useCallback(async () => {
+    if (!convexUserId) return;
+    await removeAllMeetings({ hostId: convexUserId });
+    setShowDeleteAllMeetingsConfirm(false);
+  }, [convexUserId, removeAllMeetings]);
 
   const handleAddShare = useCallback(async () => {
     if (!boardAction || boardAction.action !== "share" || !shareEmail.trim())
@@ -313,9 +321,19 @@ export default function DashboardPage() {
           )}
 
           <section>
-            <h2 className="text-lg font-semibold text-brown-900 mb-4">
-              Upcoming meetings
-            </h2>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-brown-900">
+                Upcoming meetings
+              </h2>
+              {meetings && meetings.length > 0 && (
+                <button
+                  onClick={() => setShowDeleteAllMeetingsConfirm(true)}
+                  className="text-sm text-brown-500 hover:text-red-600 transition-colors duration-150"
+                >
+                  Delete all
+                </button>
+              )}
+            </div>
             {!convexUserId ? (
               <p className="text-brown-600">Loading…</p>
             ) : meetings === undefined ? (
@@ -634,6 +652,34 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={handleDeleteAllConfirm}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              >
+                Delete all
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteAllMeetingsConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-sm rounded-xl border border-brown-200 bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-lg font-semibold text-brown-900">
+              Delete all meetings
+            </h2>
+            <p className="mb-4 text-sm text-brown-600">
+              Are you sure you want to delete all {meetings?.length ?? 0} meetings?
+              This cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowDeleteAllMeetingsConfirm(false)}
+                className="rounded-lg border border-brown-300 bg-brown-50 px-4 py-2 text-sm font-medium text-brown-800 hover:bg-brown-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAllMeetingsConfirm}
                 className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
               >
                 Delete all

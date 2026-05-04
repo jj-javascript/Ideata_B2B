@@ -182,3 +182,61 @@ export const removeParticipant = mutation({
     return null;
   },
 });
+
+export const remove = mutation({
+  args: { meetingId: v.id("meetings") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    // Delete associated participants
+    const participants = await ctx.db
+      .query("meetingParticipants")
+      .withIndex("by_meeting", (q) => q.eq("meetingId", args.meetingId))
+      .collect();
+    for (const p of participants) {
+      await ctx.db.delete(p._id);
+    }
+    // Delete associated invites
+    const invites = await ctx.db
+      .query("meetingInvites")
+      .withIndex("by_meeting", (q) => q.eq("meetingId", args.meetingId))
+      .collect();
+    for (const inv of invites) {
+      await ctx.db.delete(inv._id);
+    }
+    // Delete the meeting
+    await ctx.db.delete(args.meetingId);
+    return null;
+  },
+});
+
+export const removeAllByHost = mutation({
+  args: { hostId: v.id("users") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const meetings = await ctx.db
+      .query("meetings")
+      .withIndex("by_host", (q) => q.eq("hostId", args.hostId))
+      .collect();
+    for (const meeting of meetings) {
+      // Delete participants
+      const participants = await ctx.db
+        .query("meetingParticipants")
+        .withIndex("by_meeting", (q) => q.eq("meetingId", meeting._id))
+        .collect();
+      for (const p of participants) {
+        await ctx.db.delete(p._id);
+      }
+      // Delete invites
+      const invites = await ctx.db
+        .query("meetingInvites")
+        .withIndex("by_meeting", (q) => q.eq("meetingId", meeting._id))
+        .collect();
+      for (const inv of invites) {
+        await ctx.db.delete(inv._id);
+      }
+      // Delete the meeting
+      await ctx.db.delete(meeting._id);
+    }
+    return null;
+  },
+});

@@ -11,7 +11,6 @@
 import type * as ai from "../ai.js";
 import type * as boards from "../boards.js";
 import type * as email from "../email.js";
-import type * as generateKeys from "../generateKeys.js";
 import type * as livekit from "../livekit.js";
 import type * as meetingInvites from "../meetingInvites.js";
 import type * as meetings from "../meetings.js";
@@ -27,7 +26,6 @@ declare const fullApi: ApiFromModules<{
   ai: typeof ai;
   boards: typeof boards;
   email: typeof email;
-  generateKeys: typeof generateKeys;
   livekit: typeof livekit;
   meetingInvites: typeof meetingInvites;
   meetings: typeof meetings;

@@ -12,4 +12,4 @@ process.stdout.write(
 );
 process.stdout.write("\n");
 process.stdout.write(`JWKS=${jwks}`);
-process.stdout.write("\n"); 
+process.stdout.write("\n");
