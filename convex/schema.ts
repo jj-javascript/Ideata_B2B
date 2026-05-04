@@ -1,5 +1,4 @@
 import { defineSchema, defineTable } from "convex/server";
-import { authTables } from "@convex-dev/auth/convex";
 import { v } from "convex/values";
 
 export default defineSchema({
